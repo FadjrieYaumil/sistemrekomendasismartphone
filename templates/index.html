@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sistem Rekomendasi Smartphone | NLU & COPRAS</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f9ff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f5ff;
+            --bg-input: #ffffff;
+            --border: #e0e8f0;
+            --border-light: #e9edf2;
+            
+            /* Biru segar */
+            --blue: #1E88E5;
+            --blue-light: #42A5F5;
+            --blue-dark: #0D47A1;
+            --blue-gradient: linear-gradient(135deg, #0D47A1 0%, #1E88E5 50%, #42A5F5 100%);
+            --blue-glow: rgba(30, 136, 229, 0.2);
+            
+            --text-primary: #1a2a3a;
+            --text-secondary: #546e7a;
+            --text-muted: #90a4ae;
+            --text-dark: #1a2a3a;
+            
+            --green: #2e7d64;
+            --green-bg: rgba(46, 125, 100, 0.08);
+            --yellow: #e6a017;
+            --yellow-bg: rgba(230, 160, 23, 0.08);
+            --red: #e53935;
+            --red-bg: rgba(229, 57, 53, 0.08);
+            
+            --blue-accent: #1E88E5;
+            --orange-accent: #e67e22;
+            
+            --error-bg: #ffebee;
+            --error-text: #c62828;
+            --error-border: #ffcdd2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 24px 20px;
+            background-image: radial-gradient(circle at 10% 20%, rgba(30, 136, 229, 0.03) 0%, transparent 50%);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #e0e8f0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--blue-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: 1.5rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 
+                0 20px 35px -12px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(30, 136, 229, 0.15),
+                0 0 30px -10px rgba(30, 136, 229, 0.1);
+        }
+
+        .hero-header {
+            background: linear-gradient(135deg, #ffffff 0%, #eef3fc 40%, #e3edf7 100%);
+            padding: 2rem 2.5rem;
+            border-bottom: 2px solid var(--blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(ellipse, rgba(30, 136, 229, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--blue-gradient);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            background: var(--blue-gradient);
+            padding: 14px;
+            border-radius: 50%;
+            font-size: 1.6rem;
+            color: white;
+            box-shadow: 0 6px 14px var(--blue-glow);
+            flex-shrink: 0;
+        }
+
+        .header-text h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            background: var(--blue-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .badge-method {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(30, 136, 229, 0.1);
+            border: 1px solid rgba(30, 136, 229, 0.3);
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--blue);
+            letter-spacing: 0.3px;
+        }
+
+        .subhead {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-section {
+            padding: 2rem 2.5rem 1.5rem 2.5rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .label-input {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .label-input i { color: var(--blue); }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .text-input-area { flex: 3; min-width: 220px; }
+
+        textarea {
+            width: 100%;
+            border: 1.5px solid var(--border-light);
+            border-radius: 1rem;
+            padding: 1rem 1.25rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-weight: 450;
+        }
+
+        textarea::placeholder { color: #b0bec5; }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+            background: #ffffff;
+        }
+
+        .btn-cari {
+            background: var(--blue-gradient);
+            border: none;
+            padding: 0 2rem;
+            border-radius: 3rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            height: 54px;
+            box-shadow: 0 4px 14px rgba(30, 136, 229, 0.3);
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-cari:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 136, 229, 0.4);
+            filter: brightness(1.02);
+        }
+
+        .btn-cari:active { transform: translateY(0); }
+
+        .btn-cari:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .example-hint {
+            margin-top: 14px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(30, 136, 229, 0.06);
+            display: inline-block;
+            padding: 7px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(30, 136, 229, 0.2);
+        }
+
+        .example-hint i { color: var(--blue); }
+
+        .results-section {
+            padding: 1.8rem 2.5rem 2.5rem 2.5rem;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: var(--blue-dark);
+            padding-left: 16px;
+            border-left: 4px solid var(--blue);
+        }
+
+        .section-title i { color: var(--blue); }
+
+        .section-subtitle {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .intent-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .intent-badge {
+            background: rgba(30, 136, 229, 0.08);
+            color: var(--blue-dark);
+            padding: 6px 14px;
+            border-radius: 25px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(30, 136, 229, 0.25);
+            letter-spacing: 0.2px;
+        }
+
+        .target-spec-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--blue);
+            overflow: visible;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .target-spec-header {
+            background: rgba(30, 136, 229, 0.05);
+            padding: 0.8rem 1.3rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--blue-dark);
+        }
+
+        .target-spec-header i { color: var(--blue); }
+
+        .target-spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            overflow: visible;
+        }
+
+        .target-spec-table thead th {
+            background: rgba(30, 136, 229, 0.05);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--blue-dark);
+            border-bottom: 2px solid var(--blue-light);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .target-spec-table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            color: var(--text-secondary);
+            vertical-align: top;
+            overflow: visible;
+        }
+
+        .target-spec-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .target-spec-table tbody tr:hover td {
+            background: rgba(30, 136, 229, 0.02);
+        }
+
+        .target-spec-table .spec-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .target-spec-table .spec-name i {
+            color: var(--blue);
+            width: 16px;
+            text-align: center;
+        }
+
+        .target-spec-table .spec-value {
+            font-weight: 700;
+            color: var(--blue-dark);
+            font-size: 0.9rem;
+        }
+
+        .target-spec-table .spec-type {
+            display: inline-block;
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .type-benefit {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        .type-cost {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .target-spec-table .spec-weight {
+            color: var(--blue);
+            font-weight: 600;
+            position: relative;
+        }
+
+        /* TOOLTIP */
+        .weight-info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(30, 136, 229, 0.15);
+            color: var(--blue);
+            font-size: 0.6rem;
+            font-weight: 700;
+            cursor: help;
+            margin-left: 6px;
+            transition: all 0.2s ease;
+            vertical-align: middle;
+        }
+
+        .weight-info-icon:hover {
+            background: var(--blue);
+            color: white;
+        }
+
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-box {
+            display: none;
+            position: fixed;
+            background: #ffffff;
+            border: 1px solid var(--blue-light);
+            border-radius: 0.75rem;
+            padding: 14px;
+            min-width: 320px;
+            max-width: 380px;
+            z-index: 9999;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            font-size: 0.75rem;
+            color: #2c3e50;
+            line-height: 1.6;
+            pointer-events: none;
+        }
+
+        .tooltip-box::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: var(--blue-light) transparent transparent transparent;
+        }
+
+        .tooltip-wrapper:hover .tooltip-box {
+            display: block;
+        }
+
+        .target-spec-table .spec-desc {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .serpapi-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .serpapi-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--blue);
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .serpapi-card:hover {
+            border-left-color: var(--blue-light);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+        }
+
+        .serpapi-header {
+            background: rgba(30, 136, 229, 0.04);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .serpapi-header .search-icon {
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .serpapi-header .search-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--blue-dark);
+        }
+
+        .serpapi-header .search-term { color: var(--text-primary); font-weight: 600;}
+
+        .serpapi-body { padding: 1rem 1.5rem; }
+
+        .serpapi-spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .serpapi-spec-table thead th {
+            background: rgba(30, 136, 229, 0.05);
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--blue-dark);
+            border-bottom: 2px solid rgba(30, 136, 229, 0.3);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .serpapi-spec-table tbody td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            color: var(--text-secondary);
+        }
+
+        .serpapi-spec-table tbody tr:last-child td { border-bottom: none; }
+
+        .serpapi-spec-table .spec-type-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            width: 40%;
+        }
+
+        .serpapi-spec-table .spec-type-value {
+            font-weight: 700;
+            color: var(--blue);
+            width: 60%;
+        }
+
+        .ai-overview-box {
+            background: rgba(30, 136, 229, 0.03);
+            border: 1px dashed rgba(30, 136, 229, 0.4);
+            border-radius: 0.75rem;
+            padding: 1rem 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        .ai-overview-box .ai-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue);
+            margin-bottom: 6px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-overview-box .ai-content {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .recommendation-panel {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-panel:hover {
+            border-color: rgba(30, 136, 229, 0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+
+        .panel-header {
+            background: rgba(30, 136, 229, 0.04);
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--blue-dark);
+        }
+
+        .panel-header i { color: var(--blue); }
+
+        .phone-list { padding: 0; }
+
+        .accordion-item {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .accordion-item:last-child { border-bottom: none; }
+
+        .accordion-item.active {
+            background: rgba(30, 136, 229, 0.02);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            gap: 12px;
+            user-select: none;
+        }
+
+        .accordion-header:hover {
+            background: rgba(30, 136, 229, 0.04);
+        }
+
+        .rank-badge {
+            font-weight: 800;
+            min-width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            background: #f0f4f8;
+            color: #546e7a;
+            border: 1px solid #dce3ec;
+        }
+
+        .rank-1 { 
+            background: linear-gradient(135deg, #0D47A1, #1E88E5);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 10px rgba(30, 136, 229, 0.3);
+        }
+        .rank-2 { 
+            background: linear-gradient(135deg, #1565C0, #42A5F5);
+            color: white;
+            border: none;
+        }
+        .rank-3 { 
+            background: linear-gradient(135deg, #1976D2, #64B5F6);
+            color: white;
+            border: none;
+        }
+
+        .phone-info { flex: 3; min-width: 0; }
+
+        .phone-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .phone-specs-summary {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+        }
+
+        .phone-specs-summary span { white-space: nowrap; }
+
+        .phone-specs-summary i {
+            color: var(--blue);
+            font-size: 0.6rem;
+        }
+
+        .phone-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .price-badge {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--blue-dark);
+            white-space: nowrap;
+        }
+
+        .score-badge {
+            background: rgba(30, 136, 229, 0.1);
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--blue);
+            white-space: nowrap;
+            border: 1px solid rgba(30, 136, 229, 0.2);
+        }
+
+        .link-icons {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            align-items: center;
+        }
+
+        .link-icon {
+            width: 32px;
+            height: 32px;
+            overflow: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .link-icon.official { background: linear-gradient(135deg, #0D47A1, #1E88E5); }
+        .link-icon.shopee {
+            background-image: url("/static/images/shopeelog.png");
+            background-size: 70%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #ee4d2d;
+        }
+        .link-icon.tokopedia { background: linear-gradient(135deg, #1E88E5, #42A5F5); }
+
+        .link-icon.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .expand-icon {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .accordion-item.active .expand-icon {
+            transform: rotate(180deg);
+            color: var(--blue);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 0 1.3rem 1.3rem 1.3rem;
+            animation: slideDown 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 600px; }
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-table thead th {
+            background: rgba(30, 136, 229, 0.05);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--blue-dark);
+            border-bottom: 2px solid var(--blue-light);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-table thead th:first-child { width: 30%; }
+        .comparison-table thead th:nth-child(2) { width: 35%; color: var(--orange-accent); }
+        .comparison-table thead th:nth-child(3) { width: 35%; color: var(--blue); }
+
+        .comparison-table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            color: var(--text-secondary);
+        }
+
+        .comparison-table tbody tr:last-child td { border-bottom: none; }
+
+        .comparison-table tbody tr:hover td {
+            background: rgba(30, 136, 229, 0.02);
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .spec-label i {
+            color: var(--blue);
+            font-size: 0.7rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .spec-recommended {
+            color: var(--orange-accent);
+            font-weight: 500;
+        }
+
+        .spec-actual {
+            color: var(--blue);
+            font-weight: 500;
+        }
+
+        .spec-match {
+            color: var(--green) !important;
+            background: rgba(46, 125, 100, 0.08);
+            border-radius: 4px;
+            padding: 2px 8px;
+        }
+
+        .spec-near {
+            color: var(--yellow) !important;
+            background: rgba(230, 160, 23, 0.08);
+            border-radius: 4px;
+            padding: 2px 8px;
+        }
+
+        .spec-far {
+            color: var(--red) !important;
+            background: rgba(229, 57, 53, 0.08);
+            border-radius: 4px;
+            padding: 2px 8px;
+        }
+
+        .legend-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .legend-box .legend-title {
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .legend-dot.green { background: var(--green); }
+        .legend-dot.yellow { background: var(--yellow); }
+        .legend-dot.red { background: var(--red); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #90a4ae;
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 44px;
+            height: 44px;
+            border: 3px solid rgba(30, 136, 229, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--blue);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: var(--error-bg);
+            color: var(--error-text);
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            margin: 1rem 0;
+            border: 1px solid var(--error-border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .error-message i { font-size: 1.2rem; }
+
+        .debug-info {
+            background: #f8fafc;
+            border: 1px dashed var(--border-light);
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .debug-info span { white-space: nowrap; }
+
+        .footer-note {
+            background: #f1f5f9;
+            padding: 1rem 2.5rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #78909c;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-note i { color: var(--blue); }
+
+        @media (max-width: 780px) {
+            body { padding: 12px 8px; background: #f0f4f8; }
+            .hero-header, .input-section, .results-section { 
+                padding-left: 1.2rem; 
+                padding-right: 1.2rem; 
+            }
+            .btn-cari { 
+                width: 100%; 
+                justify-content: center; 
+                height: 48px;
+            }
+            .header-text h1 { font-size: 1.3rem; }
+            .accordion-header { flex-wrap: wrap; gap: 8px; }
+            .link-icons {
+                order: 3;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .comparison-table, .target-spec-table, .serpapi-spec-table { font-size: 0.7rem; }
+            .comparison-table thead th,
+            .comparison-table tbody td,
+            .target-spec-table thead th,
+            .target-spec-table tbody td,
+            .serpapi-spec-table thead th,
+            .serpapi-spec-table tbody td { padding: 6px 8px; }
+            .legend-box { gap: 10px; }
+            .tooltip-box { min-width: 260px; max-width: 300px; left: auto; right: 0; transform: none; }
+            .tooltip-box::after { left: auto; right: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .phone-meta { flex-direction: row; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    
+    <div class="hero-header">
+        <div class="header-content">
+            <div class="logo-icon">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <div class="header-text">
+                <center><h1>Sistem Rekomendasi Smartphone</h1></center>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <div class="label-input">
+            <i class="fas fa-keyboard"></i> Masukkan kebutuhan smartphone yang diinginkan
+        </div>
+        <div class="input-group">
+            <div class="text-input-area">
+                <textarea id="userQuery" rows="2" placeholder="Contoh: HP gaming murah 3 juta, HP kamera bagus, Samsung terbaik"></textarea>
+            </div>
+            <button id="searchBtn" class="btn-cari" onclick="searchRecommendations()">
+                <i class="fas fa-search"></i> Cari Rekomendasi
+            </button>
+        </div>
+    </div>
+
+    <div class="results-section">
+        <div class="section-title">
+            <i class="fas fa-thumbs-up"></i> Hasil Rekomendasi
+            <span class="section-subtitle">
+                <i class="fas fa-chart-line"></i> Peringkat menggunakan metode COPRAS
+            </span>
+        </div>
+        
+        <div id="loadingIndicator" class="loading-spinner" style="display: none;">
+            <div class="loader"></div>
+            <p class="loading-text">🔍 Memproses permintaan Anda...</p>
+        </div>
+        
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+        
+        <div id="intentBadges" class="intent-badges"></div>
+        
+        <div id="serpapiSection" class="serpapi-section" style="display: none;"></div>
+        
+        <div id="debugInfo" class="debug-info" style="display: none;"></div>
+        
+        <div id="targetSpecPanel" style="display: none;">
+            <div class="target-spec-panel">
+                <div class="target-spec-header">
+                    <i class="fas fa-bullseye"></i> Spesifikasi Target Rekomendasi
+                    <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 400;">
+                        (Acuan sistem berdasarkan input Anda)
+                    </span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="target-spec-table" id="targetSpecTable">
+                        <thead>
+                            <tr>
+                                <th>Spesifikasi</th>
+                                <th>Target</th>
+                                <th>Tipe</th>
+                                <th>Bobot</th>
+                                <th>Penjelasan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="targetSpecBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div id="legendBox" class="legend-box" style="display: none;">
+            <span class="legend-title"><i class="fas fa-palette"></i> Keterangan Warna:</span>
+            <span class="legend-item">
+                <span class="legend-dot green"></span> 
+                <strong style="color: var(--green);">Hijau</strong> = Memenuhi/mendekati target
+            </span>
+            <span class="legend-item">
+                <span class="legend-dot yellow"></span> 
+                <strong style="color: var(--yellow);">Kuning</strong> = Dalam toleransi
+            </span>
+            <span class="legend-item">
+                <span class="legend-dot red"></span> 
+                <strong style="color: var(--red);">Merah</strong> = Di bawah target
+            </span>
+        </div>
+        
+        <div id="recommendationContainer">
+            <div class="recommendation-panel">
+                <div class="panel-header">
+                    <i class="fas fa-trophy"></i> Top Rekomendasi Smartphone
+                </div>
+                <div id="phoneAccordion" class="phone-list">
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i> 
+                        <span>Belum ada permintaan</span>
+                        <small style="display:block;margin-top:6px;color:#90a4ae;">Ketik kebutuhan & klik Cari</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-note">
+        <i class="fas fa-database"></i> 
+        Dataset smartphone resmi | Kriteria: RAM, ROM, chipset, baterai, layar, refresh rate, kamera, jaringan, harga
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/recommend';
+
+    const SPEC_EXPLANATIONS = {
+        'RAM': 'RAM adalah memori jangka pendek atau "meja kerja" pada HP. Semakin besar RAM, semakin banyak aplikasi yang bisa dibuka bersamaan tanpa lag.',
+        'ROM': 'ROM adalah ruang penyimpanan permanen untuk menyimpan foto, video, aplikasi, dan file lainnya.',
+        'Battery': 'Kapasitas baterai menentukan berapa lama HP bisa digunakan sebelum perlu diisi ulang. Semakin besar mAh, semakin tahan lama baterai.',
+        'Camera': 'Resolusi kamera dalam Megapiksel (MP). Semakin tinggi MP, gambar yang dihasilkan semakin detail.',
+        'Chipset_Score': 'Chipset adalah "otak" dari HP yang mengatur semua proses. Skor ini menunjukkan seberapa kencang performa HP.',
+        'Screen_Size': 'Ukuran layar dalam inci (inch). Layar lebih besar cocok untuk nonton video dan main game.',
+        'Refresh_Rate': 'Refresh rate adalah seberapa sering layar memperbarui gambar per detik (Hz). 60Hz standar, 90Hz lebih mulus, 120Hz sangat mulus.',
+        'Network': 'Jaringan 5G memberikan internet super cepat. Tapi pastikan daerahmu sudah ada sinyal 5G.',
+        'Price': 'Harga adalah batas budget yang kamu inginkan. Sistem akan mencari HP dengan spesifikasi terbaik yang sesuai dengan budget kamu.'
+    };
+
+    const RELATION_LABELS = {
+        1.0: { label: 'Sangat Relevan', color: '#2e7d64' },
+        0.7: { label: 'Relevan Kuat', color: '#8bc34a' },
+        0.5: { label: 'Cukup Relevan', color: '#e6a017' },
+        0.3: { label: 'Kurang Relevan', color: '#e67e22' },
+        0.1: { label: 'Tidak Relevan', color: '#e53935' }
+    };
+
+    function getRelationInfo(relation) {
+        const thresholds = [1.0, 0.7, 0.5, 0.3, 0.1];
+        for (const t of thresholds) {
+            if (relation >= t) return RELATION_LABELS[t];
+        }
+        return RELATION_LABELS[0.1];
+    }
+
+    function formatRupiah(price) {
+        if (!price || price === 0) return 'N/A';
+        const numPrice = Number(price);
+        if (numPrice >= 1000000) {
+            return 'Rp' + (numPrice / 1000000).toFixed(1) + ' jt';
+        }
+        return 'Rp' + numPrice.toLocaleString('id-ID');
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function renderLinkIcons(links) {
+        if (!links) return '';
+        let html = '<div class="link-icons">';
+        if (links.website && links.website.trim()) {
+            html += `<a href="${escapeHtml(links.website)}" target="_blank" rel="noopener noreferrer" class="link-icon official" title="Website Resmi">
+                <i class="fas fa-globe"></i>
+            </a>`;
+        }
+        if (links.shopee && links.shopee.trim()) {
+            html += `<a href="${escapeHtml(links.shopee)}" target="_blank" rel="noopener noreferrer" class="link-icon shopee" title="Shopee"></a>`;
+        }
+        if (links.tokopedia && links.tokopedia.trim()) {
+            html += `<a href="${escapeHtml(links.tokopedia)}" target="_blank" rel="noopener noreferrer" class="link-icon tokopedia" title="Tokopedia">
+                <i class="fas fa-store"></i>
+            </a>`;
+        }
+        html += '</div>';
+        return html;
+    }
+
+    function renderComparisonTable(phone, slots) {
+        const specIcons = {
+            'RAM': 'fa-microchip', 'ROM': 'fa-database', 'Battery': 'fa-battery-full', 'Camera': 'fa-camera',
+            'Chipset_Score': 'fa-bolt', 'Screen_Size': 'fa-mobile-screen', 'Refresh_Rate': 'fa-rotate', 'Network': 'fa-wifi', 'Price': 'fa-tag'
+        };
+        const specUnits = {
+            'RAM': 'GB', 'ROM': 'GB', 'Battery': 'mAh', 'Camera': 'MP', 'Chipset_Score': 'Score',
+            'Screen_Size': 'inch', 'Refresh_Rate': 'Hz', 'Network': 'G', 'Price': 'Rp'
+        };
+        let rows = '';
+        const criteriaOrder = ['RAM', 'ROM', 'Battery', 'Camera', 'Chipset_Score', 'Screen_Size', 'Refresh_Rate', 'Network', 'Price'];
+        for (const criterion of criteriaOrder) {
+            if (!slots[criterion]) continue;
+            const slot = slots[criterion];
+            const icon = specIcons[criterion] || 'fa-circle';
+            let recommendedValue = slot.target;
+            let actualValue = phone.specs ? phone.specs[criterion] : null;
+            let recDisplay = recommendedValue;
+            let actDisplay = actualValue;
+            if (criterion === 'Price') {
+                recDisplay = formatRupiah(recommendedValue);
+                actDisplay = actualValue ? formatRupiah(actualValue) : 'N/A';
+            } else if (criterion === 'Network') {
+                recDisplay = recommendedValue + 'G';
+                actDisplay = actualValue ? actualValue + 'G' : 'N/A';
+            } else if (criterion === 'Chipset_Score') {
+                recDisplay = recommendedValue + '/100';
+                actDisplay = actualValue ? actualValue + '/100' : 'N/A';
+            } else if (actualValue !== null && actualValue !== undefined) {
+                actDisplay = actualValue + ' ' + specUnits[criterion];
+                recDisplay = recommendedValue + ' ' + specUnits[criterion];
+            } else {
+                actDisplay = 'N/A';
+                recDisplay = recommendedValue + ' ' + specUnits[criterion];
+            }
+            let comparisonClass = '';
+            let comparisonIcon = '';
+            if (actualValue !== null && actualValue !== undefined && actualValue !== 0) {
+                if (slot.type === 'benefit') {
+                    if (actualValue >= recommendedValue * 0.9) { comparisonClass = 'spec-match'; comparisonIcon = ' ✅'; }
+                    else if (actualValue >= recommendedValue * 0.7) { comparisonClass = 'spec-near'; comparisonIcon = ' ⚠️'; }
+                    else { comparisonClass = 'spec-far'; comparisonIcon = ' ❌'; }
+                } else {
+                    if (actualValue <= recommendedValue * 1.1) { comparisonClass = 'spec-match'; comparisonIcon = ' ✅'; }
+                    else if (actualValue <= recommendedValue * 1.3) { comparisonClass = 'spec-near'; comparisonIcon = ' ⚠️'; }
+                    else { comparisonClass = 'spec-far'; comparisonIcon = ' ❌'; }
+                }
+            }
+            rows += `<tr><td class="spec-label"><i class="fas ${icon}"></i> ${criterion.replace('_', ' ')}</td><td class="spec-recommended">${recDisplay}</td><td class="spec-actual ${comparisonClass}">${actDisplay}${comparisonIcon}</td></tr>`;
+        }
+        return `<table class="comparison-table"><thead><tr><th>Spesifikasi</th><th>🎯 Target</th><th>📱 HP Ini</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    function renderAccordionItem(phone, index, slots) {
+        const rankNum = index + 1;
+        let rankClass = '';
+        if (rankNum === 1) rankClass = 'rank-1';
+        else if (rankNum === 2) rankClass = 'rank-2';
+        else if (rankNum === 3) rankClass = 'rank-3';
+        const links = phone.links || {};
+        const brand = phone.brand || phone.nama_brand || '';
+        const model = phone.model || '';
+        return `<div class="accordion-item" data-index="${index}"><div class="accordion-header" onclick="toggleAccordion(${index})"><span class="rank-badge ${rankClass}">${rankNum}</span><div class="phone-info"><div class="phone-name">${escapeHtml(brand + ' ' + model)}</div><div class="phone-specs-summary"><span><i class="fas fa-microchip"></i> ${phone.ram || '?'} GB</span><span><i class="fas fa-database"></i> ${phone.rom || '?'} GB</span><span><i class="fas fa-battery-full"></i> ${phone.battery || '?'} mAh</span><span><i class="fas fa-camera"></i> ${phone.camera || '?'} MP</span></div></div>${renderLinkIcons(links)}<div class="phone-meta"><span class="price-badge">${formatRupiah(phone.price)}</span><span class="score-badge"><i class="fas fa-star"></i> ${phone.utility ? phone.utility.toFixed(1) : 0}%</span></div><i class="fas fa-chevron-down expand-icon"></i></div><div class="accordion-content" id="accordionContent${index}">${renderComparisonTable(phone, slots)}</div></div>`;
+    }
+
+    function toggleAccordion(index) {
+        const allItems = document.querySelectorAll('.accordion-item');
+        const clickedItem = allItems[index];
+        if (clickedItem.classList.contains('active')) { clickedItem.classList.remove('active'); return; }
+        allItems.forEach(item => item.classList.remove('active'));
+        clickedItem.classList.add('active');
+        clickedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function renderPhoneAccordion(phones, slots) {
+        if (!phones || phones.length === 0) return `<div class="empty-state"><i class="fas fa-inbox"></i><span>Tidak ada perangkat yang ditemukan</span></div>`;
+        let html = '';
+        phones.forEach((phone, index) => { html += renderAccordionItem(phone, index, slots); });
+        setTimeout(() => { const firstItem = document.querySelector('.accordion-item'); if (firstItem) firstItem.classList.add('active'); }, 100);
+        return html;
+    }
+
+    function renderTargetSpecTable(slots, relations, baseWeights) {
+        const panel = document.getElementById('targetSpecPanel');
+        const tbody = document.getElementById('targetSpecBody');
+        if (!slots || Object.keys(slots).length === 0) { panel.style.display = 'none'; return; }
+        panel.style.display = 'block';
+        const specIcons = { 'RAM': 'fa-microchip', 'ROM': 'fa-database', 'Battery': 'fa-battery-full', 'Camera': 'fa-camera', 'Chipset_Score': 'fa-bolt', 'Screen_Size': 'fa-mobile-screen', 'Refresh_Rate': 'fa-rotate', 'Network': 'fa-wifi', 'Price': 'fa-tag' };
+        const criteriaOrder = ['RAM', 'ROM', 'Battery', 'Camera', 'Chipset_Score', 'Screen_Size', 'Refresh_Rate', 'Network', 'Price'];
+        const defaultBaseWeights = { 'RAM': 10, 'ROM': 10, 'Battery': 10, 'Camera': 10, 'Chipset_Score': 10, 'Screen_Size': 10, 'Refresh_Rate': 10, 'Network': 10, 'Price': 20 };
+        const baseW = baseWeights || defaultBaseWeights;
+        let totalFinal = 0;
+        const finalWeights = {};
+        for (const criterion of criteriaOrder) {
+            if (!slots[criterion]) continue;
+            const relation = relations ? (relations[criterion] || 0.5) : 0.5;
+            finalWeights[criterion] = (baseW[criterion] || 10) * relation;
+            totalFinal += finalWeights[criterion];
+        }
+        let html = '';
+        for (const criterion of criteriaOrder) {
+            if (!slots[criterion]) continue;
+            const slot = slots[criterion];
+            const icon = specIcons[criterion] || 'fa-circle';
+            const explanation = SPEC_EXPLANATIONS[criterion] || '';
+            const baseWeight = baseW[criterion] || 10;
+            const relation = relations ? (relations[criterion] || 0.5) : 0.5;
+            const finalWeight = finalWeights[criterion];
+            const normalizedWeight = totalFinal > 0 ? (finalWeight / totalFinal * 100) : 0;
+            const relInfo = getRelationInfo(relation);
+            let displayValue = slot.target;
+            if (criterion === 'Price') displayValue = formatRupiah(slot.target);
+            else if (criterion === 'Chipset_Score') displayValue = slot.target + '/100';
+            else if (criterion === 'Network') displayValue = slot.target + 'G';
+            else displayValue = slot.target + ' ' + slot.unit;
+            const typeClass = slot.type === 'benefit' ? 'type-benefit' : 'type-cost';
+            const typeLabel = slot.type === 'benefit' ? '↑ Benefit' : '↓ Cost';
+            const tooltipHtml = `<div style="text-align:left;"><div style="font-weight:700;color:#1E88E5;">📐 Perhitungan Bobot "${criterion.replace('_', ' ')}"</div><div style="margin:8px 0;background:#f5f9ff;padding:8px;border-radius:8px;"><div>Bobot Akhir = ${baseWeight} × ${relation.toFixed(2)} = ${finalWeight.toFixed(2)}</div><div>Normalisasi = ${normalizedWeight.toFixed(1)}%</div></div><div>Keterangan Relasi: ${relInfo.label} (${relation.toFixed(2)})</div></div>`;
+            html += `<tr><td class="spec-name"><i class="fas ${icon}"></i> ${criterion.replace('_', ' ')}</td><td class="spec-value">${displayValue}</td><td><span class="spec-type ${typeClass}">${typeLabel}</span></td><td class="spec-weight">${normalizedWeight.toFixed(1)}%<span class="tooltip-wrapper"><span class="weight-info-icon">?</span><span class="tooltip-box">${tooltipHtml}</span></span></td><td class="spec-desc">${explanation}</td></tr>`;
+        }
+        tbody.innerHTML = html;
+    }
+
+    function renderSerpAPI(results) {
+        const container = document.getElementById('serpapiSection');
+        if (!results || results.length === 0) { container.style.display = 'none'; return; }
+        container.style.display = 'block';
+        let html = '<div style="font-size: 0.8rem; margin-bottom: 12px;"><i class="fas fa-globe" style="color:#1E88E5;"></i> Hasil pencarian informasi:</div>';
+        results.forEach((item) => {
+            html += `<div class="serpapi-card"><div class="serpapi-header"><div class="search-icon"><i class="fas fa-search"></i></div><div><div class="search-title">🔍 "<span class="search-term">${escapeHtml(item.term)}</span>"</div></div></div><div class="serpapi-body">`;
+            if (item.definition) html += `<div class="ai-overview-box"><div class="ai-label"><i class="fas fa-robot"></i> AI Overview</div><div class="ai-content">${escapeHtml(item.definition)}</div></div>`;
+            const hasSpecs = item.has_specs || item.min_ram || item.rec_ram || item.min_storage || item.min_battery || item.min_camera || item.recommended_chipset;
+            if (hasSpecs) {
+                html += `<table class="serpapi-spec-table"><thead><tr><th>📊 Spesifikasi</th><th>Nilai</th></tr></thead><tbody>`;
+                if (item.min_ram) html += `<tr><td class="spec-type-label">RAM Minimal</td><td class="spec-type-value">${item.min_ram} GB</td></tr>`;
+                if (item.rec_ram) html += `<tr><td class="spec-type-label">RAM Rekomendasi</td><td class="spec-type-value">${item.rec_ram} GB</td></tr>`;
+                if (item.min_storage) html += `<tr><td class="spec-type-label">Penyimpanan Minimal</td><td class="spec-type-value">${item.min_storage} GB</td></tr>`;
+                if (item.min_battery) html += `<tr><td class="spec-type-label">Baterai Minimal</td><td class="spec-type-value">${item.min_battery} mAh</td></tr>`;
+                if (item.min_camera) html += `<tr><td class="spec-type-label">Kamera Minimal</td><td class="spec-type-value">${item.min_camera} MP</td></tr>`;
+                if (item.recommended_chipset) html += `<tr><td class="spec-type-label">Chipset Rekomendasi</td><td class="spec-type-value">${escapeHtml(item.recommended_chipset)}</td></tr>`;
+                html += `</tbody></table>`;
+            }
+            html += `</div></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderDebugInfo(data) {
+        const debugDiv = document.getElementById('debugInfo');
+        const unknownTerms = data.unknown_terms || [];
+        const serpapiResults = data.serpapi_results || [];
+        debugDiv.style.display = 'block';
+        debugDiv.innerHTML = `<span><i class="fas fa-bug"></i> <strong>Debug:</strong></span><span>Istilah terdeteksi: <strong style="color:#1E88E5;">${unknownTerms.length > 0 ? unknownTerms.join(', ') : 'tidak ada'}</strong></span><span>Hasil SerpAPI: <strong style="color:#1E88E5;">${serpapiResults.length} ditemukan</strong></span><span>Total HP: <strong style="color:#1E88E5;">${data.total_alternatives || 0}</strong></span>`;
+    }
+
+    function renderResults(data) {
+        renderSerpAPI(data.serpapi_results || []);
+        renderDebugInfo(data);
+        renderTargetSpecTable(data.slots || {}, data.relations || {}, data.base_weights || {});
+        document.getElementById('legendBox').style.display = 'flex';
+        const recommendations = data.recommendations || [];
+        const slots = data.slots || {};
+        document.getElementById('phoneAccordion').innerHTML = renderPhoneAccordion(recommendations, slots);
+        const intents = data.intents || {};
+        const badgeContainer = document.getElementById('intentBadges');
+        if (Object.keys(intents).length > 0) {
+            const labels = { 'gaming': '🎮 Gaming', 'fotografi': '📷 Fotografi', 'baterai': '🔋 Baterai', 'performa': '⚡ Performa', 'budget': '💰 Budget', 'multimedia': '🎬 Multimedia', 'harian': '📱 Harian' };
+            badgeContainer.innerHTML = Object.entries(intents).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([intent,score])=> `<span class="intent-badge">${labels[intent]||intent} ${(score*100).toFixed(0)}%</span>`).join('');
+        } else badgeContainer.innerHTML = '';
+        document.querySelector('.results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    async function searchRecommendations() {
+        const query = document.getElementById('userQuery').value.trim();
+        if (!query) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.style.display = 'flex';
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Maaf, silakan input terlebih dahulu';
+            return;
+        }
+        const searchBtn = document.getElementById('searchBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.style.display = 'none';
+        document.getElementById('serpapiSection').style.display = 'none';
+        document.getElementById('targetSpecPanel').style.display = 'none';
+        document.getElementById('legendBox').style.display = 'none';
+        document.getElementById('debugInfo').style.display = 'none';
+        document.getElementById('intentBadges').innerHTML = '';
+        searchBtn.disabled = true;
+        searchBtn.innerHTML = '<span class="loader" style="width:18px;height:18px;"></span> Mencari...';
+        loadingIndicator.style.display = 'block';
+        try {
+            const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: query }) });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Gagal memproses permintaan');
+            if (data.error) throw new Error(data.error);
+            renderResults(data);
+        } catch (error) {
+            console.error(error);
+            errorMessage.style.display = 'flex';
+            errorMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message}`;
+            document.getElementById('phoneAccordion').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><span>Gagal mendapatkan rekomendasi</span></div>';
+        } finally {
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = '<i class="fas fa-search"></i> Cari Rekomendasi';
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    document.getElementById('userQuery').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); searchRecommendations(); } });
+    document.addEventListener('DOMContentLoaded', () => { document.getElementById('userQuery').value = ''; });
+    document.addEventListener('mouseover', function(e) {
+        const tooltipWrapper = e.target.closest('.tooltip-wrapper');
+        if (tooltipWrapper) {
+            const tooltipBox = tooltipWrapper.querySelector('.tooltip-box');
+            if (tooltipBox) {
+                const rect = tooltipWrapper.getBoundingClientRect();
+                let top = rect.top - (tooltipBox.offsetHeight || 250) - 12;
+                let left = rect.left + (rect.width / 2) - 160;
+                if (left < 10) left = 10;
+                if (left + 320 > window.innerWidth - 10) left = window.innerWidth - 330;
+                if (top < 10) { top = rect.bottom + 12; tooltipBox.style.bottom = 'auto'; }
+                tooltipBox.style.top = top + 'px';
+                tooltipBox.style.left = left + 'px';
+                tooltipBox.style.transform = 'none';
+                tooltipBox.style.bottom = 'auto';
+            }
+        }
+    });
+</script>
+</body>
+</html>
